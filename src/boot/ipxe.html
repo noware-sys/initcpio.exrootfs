@@ -1,0 +1,9 @@
+#!ipxe
+
+echo Loading kernel
+#kernel ../mach/arch/x86/boot/vmlinuz-linux root=root@127.0.0.2:/mach/arch/x86 ro earlymodules=atkbd modules-load=atkbd earlyprintk=vga rootwait rootfsram=0 rootfsramreleasesrc=1 extroot=1 rootfstype=ssh rootflags=debug
+kernel ../mach/arch/x86/boot/vmlinuz-linux edd=off root=root@192.168.1.2:/mach/arch/x86 rw earlymodules=atkbd modules-load=atkbd earlyprintk=vga exrootfs_enabled=1 rootfstype=ssh
+echo Loading initramfs image
+initrd ../mach/arch/x86/boot/intel-ucode.img
+initrd ../mach/arch/x86/boot/initramfs-linux-exrootfs.img
+#boot

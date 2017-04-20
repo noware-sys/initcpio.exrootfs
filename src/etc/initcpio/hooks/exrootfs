@@ -1,0 +1,57 @@
+function run_hook ()
+{
+	if [ "${exrootfs_enabled}" != 0 ]
+	then
+		#exit;
+		ipconfig eth0;
+		mount_handler="exrootfs_mount_handler";
+	fi
+}
+
+function exrootfs_mount_handler ()
+{
+	echo "P1:""${1}"":P1";
+	
+	local indent hk s;
+	
+	indent='';
+	hk='exrootfs';
+	
+	s=3;
+	
+	#exit;
+	
+	msg "${indent}""${hk}"':'":: mounting '$root' on real root";
+	#echo -n -e "${indent}""${hk}"": Mounting the RAM file system as the future root (temporary -> actual) ... ";
+	#mkdir --parents "${1}"
+	#mount -t "${ramdisk_ram_fs_type}" -o rbind "${ramdisk_ram_mount_location}" "${1}"
+	#mount --no-mtab --options rbind "${root_tmp}" "${1}";
+	#msg 'mount --no-mtab --types '"${rootfstype}"' --options '"${rootflags}"' --source '"${root}"' --target '"${root_tmp}"'';
+	if [ !mount ${rootfstype:+--types $rootfstype} --options ${rwopt:-ro}${rootflags:+,$rootflags} --source "${root}" --target "${1}" ]
+	#if [ "$?" = 0 ]
+	then
+	#	echo -e -n "succeeded\n";
+	#else
+		err "${indent}""${hk}"':'"Mounting root '${root}' failed.";
+		msg "${indent}""${hk}"':''You are now being dropped into an emergency shell.';
+		launch_interactive_shell
+		msg "${indent}""${hk}"':''Trying to continue (this will most likely fail) ...';
+	else
+		msg "${indent}""${hk}"':'"Mounting root '${root}' succeeded.";
+	fi
+	
+	# Disable mounting all the pseudo filesystems possible.
+	#systemctl mask dev-hugepages.mount
+	
+	# Disable mounting the /tmp pseudo filesystem.
+	#systemctl mask tmp.mount
+	
+	# Unmount the /dev/shm pseudo filesystem.
+	#umount /dev/shm
+	
+	#umount "/root_ram/root_source"
+	echo "${indent}""${hk}"':'"Sleeping for ""${s}"" seconds";
+	sleep "${s}";
+	
+	echo "${indent}""${hk}"':''DONE:2';
+}
